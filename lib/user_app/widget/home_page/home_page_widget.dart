@@ -1,5 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:eGrocer/admin_app/admin_bloc/category_options_bloc/category_bloc.dart';
+import 'package:eGrocer/admin_app/admin_bloc/category_options_bloc/category_bloc_event.dart';
+import 'package:eGrocer/admin_app/admin_bloc/slider_options_bloc/slider_bloc.dart';
+import 'package:eGrocer/admin_app/admin_bloc/slider_options_bloc/slider_bloc_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
@@ -78,170 +82,177 @@ class HomePageWidget extends StatelessWidget {
             )),
         body: BlocBuilder<CategoriesBloc, CategoriesState>(
             builder: (BuildContext context, state) {
-          return ListView(
-            children: [
-              const SizedBox(
-                height: 15,
-              ),
-              BlocBuilder<SliderCubit, SliderCubitState>(
-                  builder: (BuildContext context, state) {
-                final sliderModel = state.sliderCubitModel;
-                return CarouselSlider.builder(
-                  options: CarouselOptions(
-                    viewportFraction: 0.96,
-                    aspectRatio: 16 / 9,
-                    enableInfiniteScroll: true,
-                    reverse: false,
-                    autoPlay: true,
-                    autoPlayInterval: const Duration(seconds: 5),
-                    autoPlayAnimationDuration:
-                        const Duration(milliseconds: 1000),
-                    autoPlayCurve: Curves.easeIn,
-                  ),
-                  itemCount: sliderModel.sliders.length,
-                  itemBuilder:
-                      (BuildContext context, int index, int realIndex) {
-                    final slider = sliderModel.sliders[index];
-                    return Container(
-                        width: MediaQuery.of(context).size.width,
-                        margin: const EdgeInsets.symmetric(horizontal: 10.0),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10)),
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: CachedNetworkImage(
-                              errorWidget: (widget, str, obj) =>
-                                  const Icon(Icons.error_outline_sharp),
-                              imageUrl: slider.getPoster(),
-                              fit: BoxFit.fill,
-                            )));
-                  },
-                );
-              }),
-              const SizedBox(
-                height: 15,
-              ),
-              BlocBuilder<MainBloc, MainViewBlocState>(
-                builder: (BuildContext context, state) {
-                  var index = 1;
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Card(
-                      child: _SectionNameWidget(
-                          sectionName: "Categories",
-                          shopBy: "Shop by categories",
-                          delegateClick: () {
-                            context
-                                .read<MainBloc>()
-                                .add(NextPageBlocEvent(index: index));
-                          }),
+          return RefreshIndicator(
+            onRefresh: ()async {
+               context.read<SliderCubit>().getSliders();
+               context.read<CategoryBloc>().add(GetCategoryBlocEvent());
+               context.read<ProductsBloc>().add(GetAllProductsEvent());
+            },
+            child: ListView(
+              children: [
+                const SizedBox(
+                  height: 15,
+                ),
+                BlocBuilder<SliderCubit, SliderCubitState>(
+                    builder: (BuildContext context, state) {
+                  final sliderModel = state.sliderCubitModel;
+                  return CarouselSlider.builder(
+                    options: CarouselOptions(
+                      viewportFraction: 0.96,
+                      aspectRatio: 16 / 9,
+                      enableInfiniteScroll: true,
+                      reverse: false,
+                      autoPlay: true,
+                      autoPlayInterval: const Duration(seconds: 5),
+                      autoPlayAnimationDuration:
+                          const Duration(milliseconds: 1000),
+                      autoPlayCurve: Curves.easeIn,
                     ),
+                    itemCount: sliderModel.sliders.length,
+                    itemBuilder:
+                        (BuildContext context, int index, int realIndex) {
+                      final slider = sliderModel.sliders[index];
+                      return Container(
+                          width: MediaQuery.of(context).size.width,
+                          margin: const EdgeInsets.symmetric(horizontal: 10.0),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10)),
+                          child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: CachedNetworkImage(
+                                errorWidget: (widget, str, obj) =>
+                                    const Icon(Icons.error_outline_sharp),
+                                imageUrl: slider.getPoster(),
+                                fit: BoxFit.fill,
+                              )));
+                    },
                   );
-                },
-              ),
-              const _CategoriesWidget(),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Card(
-                  child: _SectionNameWidget(
-                      sectionName: "Brands",
-                      shopBy: "Shop by brands",
-                      delegateClick: () {}),
+                }),
+                const SizedBox(
+                  height: 15,
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Card(
-                  child: Container(
-                    decoration: BoxDecoration(
-                        // color: const Color(0xFF212934),
-                        borderRadius: BorderRadius.circular(10)),
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      primary: false,
-                      padding: const EdgeInsets.all(20),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        crossAxisCount: 3,
+                BlocBuilder<MainBloc, MainViewBlocState>(
+                  builder: (BuildContext context, state) {
+                    var index = 1;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Card(
+                        child: _SectionNameWidget(
+                            sectionName: "Categories",
+                            shopBy: "Shop by categories",
+                            delegateClick: () {
+                              context
+                                  .read<MainBloc>()
+                                  .add(NextPageBlocEvent(index: index));
+                            }),
                       ),
-                      itemCount: 9,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Container(
-                            decoration: BoxDecoration(
-                                color: Colors.teal,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: const Text(
-                              "Brands",
-                              // style: TextStyle(color: Colors.white),
-                            ));
-                      },
+                    );
+                  },
+                ),
+                const _CategoriesWidget(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Card(
+                    child: _SectionNameWidget(
+                        sectionName: "Brands",
+                        shopBy: "Shop by brands",
+                        delegateClick: () {}),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Card(
+                    child: Container(
+                      decoration: BoxDecoration(
+                          // color: const Color(0xFF212934),
+                          borderRadius: BorderRadius.circular(10)),
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        primary: false,
+                        padding: const EdgeInsets.all(20),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          crossAxisCount: 3,
+                        ),
+                        itemCount: 9,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.teal,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: const Text(
+                                "Brands",
+                                // style: TextStyle(color: Colors.white),
+                              ));
+                        },
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Card(
-                  child: _SectionNameWidget(
-                      sectionName: "All Products",
-                      shopBy: "All Available Products In App",
-                      delegateClick: () {
-                        context.read<ProductsBloc>().add(GetAllProductsEvent());
-                        Navigator.of(context)
-                            .pushNamed(NavigationRouteNames.products);
-                      }),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Card(
+                    child: _SectionNameWidget(
+                        sectionName: "All Products",
+                        shopBy: "All Available Products In App",
+                        delegateClick: () {
+                          context.read<ProductsBloc>().add(GetAllProductsEvent());
+                          Navigator.of(context)
+                              .pushNamed(NavigationRouteNames.products);
+                        }),
+                  ),
                 ),
-              ),
-              BlocBuilder<ProductsBloc, ProductsBlocState>(
-                builder: (BuildContext context, state) {
-                  final products = state.productsBlocModel.limitProducts;
-                  return _ScrollBarListProductWidget(productList: products);
-                },
-              ),
-              // _SectionNameWidget(
-              //     sectionName: "All Vegetables",
-              //     shopBy: "All Vegetables Available In App",
-              //     delegateClick: () {
-              //       final category = state.categoriesBlocModel
-              //           .returnCategoryByName(categories, "Vegetables");
-              //       context.read<ProductsBloc>().add(
-              //           GetProductByCategoryEvent(
-              //               categoryId: category.first.id));
-              //       Navigator.of(context)
-              //           .pushNamed('/categories/product_by_category');
-              //       // print(category.id);
-              //     }),
-              // BlocBuilder<ProductsBloc, ProductsBlocState>(
-              //   builder: (BuildContext context, state) {
-              //     final product = state.productsBlocModel.productByCategory;
-              //     return _ScrollBarListProductWidget(
-              //       productList: product,
-              //     );
-              //   },
-              // )
-              // _SectionNameWidget(
-              //     sectionName: "All Fruits",
-              //     shopBy: "All Fruits Available In App",
-              //     deligateClick: () {}),
-              // // const _ScrollBarListProductWidget(
-              // //     productList: HomePageData.productList),
-              // _SectionNameWidget(
-              //   sectionName: "Deal of the Day",
-              //   shopBy: "All Spices Products In App",
-              //   deligateClick: () {},
-              // ),
-              // // const _ScrollBarListProductWidget(
-              // //     productList: HomePageData.productList),
-              // _SectionNameWidget(
-              //   sectionName: "All Beverages",
-              //   shopBy: "All Beverages Available In App",
-              //   deligateClick: () {},
-              // ),
-              // const _ScrollBarListProductWidget(
-              //     productList: HomePageData.productList)
-            ],
+                BlocBuilder<ProductsBloc, ProductsBlocState>(
+                  builder: (BuildContext context, state) {
+                    final products = state.productsBlocModel.limitProducts;
+                    return _ScrollBarListProductWidget(productList: products);
+                  },
+                ),
+                // _SectionNameWidget(
+                //     sectionName: "All Vegetables",
+                //     shopBy: "All Vegetables Available In App",
+                //     delegateClick: () {
+                //       final category = state.categoriesBlocModel
+                //           .returnCategoryByName(categories, "Vegetables");
+                //       context.read<ProductsBloc>().add(
+                //           GetProductByCategoryEvent(
+                //               categoryId: category.first.id));
+                //       Navigator.of(context)
+                //           .pushNamed('/categories/product_by_category');
+                //       // print(category.id);
+                //     }),
+                // BlocBuilder<ProductsBloc, ProductsBlocState>(
+                //   builder: (BuildContext context, state) {
+                //     final product = state.productsBlocModel.productByCategory;
+                //     return _ScrollBarListProductWidget(
+                //       productList: product,
+                //     );
+                //   },
+                // )
+                // _SectionNameWidget(
+                //     sectionName: "All Fruits",
+                //     shopBy: "All Fruits Available In App",
+                //     deligateClick: () {}),
+                // // const _ScrollBarListProductWidget(
+                // //     productList: HomePageData.productList),
+                // _SectionNameWidget(
+                //   sectionName: "Deal of the Day",
+                //   shopBy: "All Spices Products In App",
+                //   deligateClick: () {},
+                // ),
+                // // const _ScrollBarListProductWidget(
+                // //     productList: HomePageData.productList),
+                // _SectionNameWidget(
+                //   sectionName: "All Beverages",
+                //   shopBy: "All Beverages Available In App",
+                //   deligateClick: () {},
+                // ),
+                // const _ScrollBarListProductWidget(
+                //     productList: HomePageData.productList)
+              ],
+            ),
           );
         }));
   }

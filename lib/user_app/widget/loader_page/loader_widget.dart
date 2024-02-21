@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../di/di_container.dart';
 import '../../../routes/routes.dart';
 import '../../domain/api_client/auth_api_client.dart';
 import '../../domain/api_client/network_client.dart';
@@ -70,6 +71,7 @@ class _LoaderWidgetState extends State<LoaderWidget> {
     BuildContext context,
     LoaderViewCubitState state,
   ) async {
+    final networkClient = locator<NetworkClient>();
     var authBloc = BlocProvider.of<AuthBloc>(context);
     var categoryBloc = BlocProvider.of<CategoriesBloc>(context);
     var productBloc = BlocProvider.of<ProductsBloc>(context);
@@ -78,7 +80,7 @@ class _LoaderWidgetState extends State<LoaderWidget> {
     var mainBloc = BlocProvider.of<MainBloc>(context);
     var sliderCubit = BlocProvider.of<SliderCubit>(context);
 
-    await NetworkClient.initDio();
+    await networkClient.initDio();
     sliderCubit.getSliders();
     final user = await AuthApiClient().getToken();
     final authModel = authBloc.state.authModel;

@@ -3,13 +3,15 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
+import '../../di/di_container.dart';
 import '../../user_app/domain/api_client/network_client.dart';
 
 class ProductApi {
+  static final _networkClient = locator<NetworkClient>();
   static Future<Map<String, dynamic>> getAllProduct({required int page}) async {
     Map<String, dynamic> result = {};
     try {
-      final response = await NetworkClient.dio.get("/get/products",
+      final response = await _networkClient.dio.get("/get/products",
           queryParameters: {"order_name": "id", "method": "asc", "page": page});
       if (response.statusCode != 200) {
         return result = {"serverError": response.data};
@@ -40,7 +42,7 @@ class ProductApi {
         "category_id": categoryId,
       });
       final response =
-          await NetworkClient.dio.post("/add/product", data: dataMap);
+          await _networkClient.dio.post("/add/product", data: dataMap);
       if (response.statusCode != 200) {
         return result = {"error": response.data['message']};
       }
@@ -71,7 +73,7 @@ class ProductApi {
         "category_id": categoryId,
       });
       final response =
-          await NetworkClient.dio.post("/update/product/$id", data: dataMap);
+          await _networkClient.dio.post("/update/product/$id", data: dataMap);
       if (response.statusCode != 200) {
         return result = {"error": response.data['message']};
       }
@@ -85,15 +87,12 @@ class ProductApi {
   static Future<Map<String, dynamic>> deleteProduct({required int? id}) async {
     Map<String, dynamic> result = {};
     // try {
-      final response = await NetworkClient.dio.delete("/delete/product/$id");
+      final response = await _networkClient.dio.delete("/delete/product/$id");
       debugPrint("${response.data}");
       if (response.statusCode != 200) {
         return result = {"error": response.data['message']};
       }
       result = response.data;
-    // } catch (err) {
-    //   result = {"error": err};
-    // }
     return result;
   }
 }

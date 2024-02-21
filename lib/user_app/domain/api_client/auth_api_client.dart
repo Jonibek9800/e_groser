@@ -4,9 +4,11 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../configuration/configuration.dart';
+import '../../../di/di_container.dart';
 import 'network_client.dart';
 
 class AuthApiClient {
+  final _networkClient = locator<NetworkClient>();
   Future<Map<String, dynamic>> auth({
     required email,
     required String password,
@@ -14,7 +16,7 @@ class AuthApiClient {
     Map<String, dynamic> result = {};
     try {
       final params = {"email": email, 'password': password};
-      final sessionId = await NetworkClient.dio.post("/auth/login", queryParameters: params);
+      final sessionId = await _networkClient.dio.post("/auth/login", queryParameters: params);
       debugPrint("session: $sessionId");
       if (sessionId.statusCode != 200) return {"serverError": true};
 
@@ -44,7 +46,7 @@ class AuthApiClient {
         "phone_number": phoneNumber,
         "role_id": roleId,
       });
-      final response = await NetworkClient.dio.post("/update/$userId", data: params,
+      final response = await _networkClient.dio.post("/update/$userId", data: params,
           onSendProgress: (int sent, int total) {
         debugPrint("$sent $total");
       });
@@ -74,7 +76,7 @@ class AuthApiClient {
         "password": password,
         "confirm_password": confirmPassword
       };
-      final response = await NetworkClient.dio.post("/auth/register", queryParameters: params);
+      final response = await _networkClient.dio.post("/auth/register", queryParameters: params);
       if (response.statusCode != 200) return {"serverError": true};
       result = response.data;
     } catch (err) {
@@ -84,7 +86,7 @@ class AuthApiClient {
   }
 
   Future<String> logout() async {
-    final response = await NetworkClient.dio.get("/logout");
+    final response = await _networkClient.dio.get("/logout");
 
     return response.data['message'];
   }
@@ -92,7 +94,7 @@ class AuthApiClient {
   Future<Map<String, dynamic>?> getToken() async {
     Map<String, dynamic>? result;
     try {
-      final params = await NetworkClient.dio.get("/get/token");
+      final params = await _networkClient.dio.get("/get/token");
 
       if (params.statusCode != 200) return {"serverError": true};
       Map<String, dynamic> json = params.data;

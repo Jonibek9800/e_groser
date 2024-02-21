@@ -1,11 +1,13 @@
-
 import 'package:flutter/cupertino.dart';
 
 import '../../../configuration/configuration.dart';
+import '../../../di/di_container.dart';
 import '../../../entity/product.dart';
 import 'network_client.dart';
 
 class ProductApiClient {
+  final _networkClient = locator<NetworkClient>();
+
   String getImage(String? posterPath) {
     return "${Configuration.host}/get/product/image/$posterPath";
   }
@@ -20,8 +22,8 @@ class ProductApiClient {
         "order_name": orderName,
         "method": orderMethod,
       };
-      final response = await NetworkClient.dio.get("/get/products", queryParameters: params);
-      debugPrint("${response.data}");
+      final response = await _networkClient.dio
+          .get("/get/products", queryParameters: params);
       result = response.data['products'];
     } catch (err) {
       result = {"error": err};
@@ -29,34 +31,33 @@ class ProductApiClient {
     return result;
   }
 
-  Future<List<Product>> getLimitProducts(int? limit, orderName, orderMethod) async {
-    parser(dynamic json) {
-      final jsonMap = json as Map<String, dynamic>;
-      List<dynamic> list = jsonMap['products']['data'];
-      List<Product> response = list.map((e) => Product.fromJson(e)).toList();
-      return response;
-    }
+  Future<List<Product>> getLimitProducts(
+      int? limit, orderName, orderMethod) async {
+    List<Product> result = [];
     Map<String, dynamic> params = {
       "limit": limit,
       "order_name": orderName,
       "method": orderMethod,
     };
-    final result = await NetworkClient.get("/get/products", parser, params);
+    final response =
+        await _networkClient.dio.get("/get/products", queryParameters: params);
+    debugPrint("response limit: ${response.data}");
+    result = (response.data["products"]['data'] as List)
+        .map((e) => Product.fromJson(e))
+        .toList();
     return result;
   }
 
   Future<List<Product>> getProductByCategory(int? categoryId) async {
-    parser(dynamic json) {
-      final jsonMap = json as Map<String, dynamic>;
-      List<dynamic> list = jsonMap['products'];
-      List<Product> response = list.map((e) => Product.fromJson(e)).toList();
-      return response;
-    }
+    List<Product> result = [];
 
-    final result = await NetworkClient.get(
+    final response = await _networkClient.dio.get(
       "/get/products/$categoryId",
-      parser,
     );
+    debugPrint("$response");
+    result = (response.data["products"] as List)
+        .map((e) => Product.fromJson(e))
+        .toList();
     return result;
   }
 }

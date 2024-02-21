@@ -7,10 +7,10 @@ abstract class AppFactory {
 }
 
 final multiProviderApp = locator<MultiProviders>();
-
+final networkClient = locator<NetworkClient>();
 void main() async {
   registerLocator();
   WidgetsFlutterBinding.ensureInitialized();
-  await NetworkClient.initDio();
+  await networkClient.initDio();
   runApp(multiProviderApp.providers());
 }

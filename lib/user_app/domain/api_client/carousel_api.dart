@@ -1,11 +1,13 @@
 
 import '../../../configuration/configuration.dart';
+import '../../../di/di_container.dart';
 import 'network_client.dart';
 
 class CarouselApi {
+  static final _networkClient = locator<NetworkClient>();
   static Future<Map<String, dynamic>> getCarouselImages() async {
     try {
-      final response = await NetworkClient.dio.get("/get/sliders");
+      final response = await _networkClient.dio.get("/get/sliders");
       if (response.statusCode != 200) {
         return {"error": "I can not get the result"};
       }

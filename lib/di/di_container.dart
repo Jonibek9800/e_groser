@@ -1,4 +1,6 @@
+import 'package:eGrocer/admin_app/admin_bloc/order_bloc/order_bloc.dart';
 import 'package:eGrocer/main.dart';
+import 'package:eGrocer/user_app/domain/api_client/network_client.dart';
 import 'package:eGrocer/user_app/domain/blocs/auth_bloc/auth_bloc.dart';
 import 'package:eGrocer/user_app/my_app.dart';
 import 'package:flutter/material.dart';
@@ -51,6 +53,7 @@ class MultiProviders {
       BlocProvider(create: (_) => CategoryBloc()),
       BlocProvider(create: (_) => ProductBloc()),
       BlocProvider(create: (_) => SliderBloc()),
+      BlocProvider(create: (_) => OrderBloc()),
     ], child: AppFactoryDefault().makeApp());
   }
 }
@@ -58,8 +61,5 @@ class MultiProviders {
 void registerLocator() {
   locator.registerLazySingleton<AppFactoryDefault>(() => AppFactoryDefault());
   locator.registerLazySingleton<MultiProviders>(() => MultiProviders());
-}
-
-void state() {
-  print("Hello");
+  locator.registerSingleton<NetworkClient>(NetworkClient());
 }

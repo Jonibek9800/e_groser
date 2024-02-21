@@ -1,3 +1,5 @@
+import 'package:eGrocer/admin_app/admin_bloc/order_bloc/order_bloc.dart';
+import 'package:eGrocer/admin_app/admin_bloc/order_bloc/order_bloc_event.dart';
 import 'package:eGrocer/admin_app/admin_bloc/product_options_bloc/product_bloc.dart';
 import 'package:eGrocer/admin_app/admin_bloc/product_options_bloc/product_bloc_event.dart';
 import 'package:eGrocer/admin_app/admin_bloc/slider_options_bloc/slider_bloc.dart';
@@ -142,6 +144,35 @@ class CreateWidgetPage extends StatelessWidget {
                     const Column(
                       children: [
                         Text("Edit Slider Page"),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+            Card(
+              child: InkWell(
+                borderRadius: BorderRadius.circular(10),
+                onTap: () {
+                  context.read<OrderBloc>().add(GetOrdersBlocEvent());
+                  Navigator.pushNamed(context, NavigationRouteNames.ordersPage);
+                },
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset(
+                        AppImages.carousel,
+                        height: 100,
+                        width: 100,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    const Column(
+                      children: [
+                        Text("Order List"),
                       ],
                     )
                   ],

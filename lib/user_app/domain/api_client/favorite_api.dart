@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 
+import '../../../di/di_container.dart';
 import 'network_client.dart';
 
 class FavoriteApi {
+  static final _networkClient = locator<NetworkClient>();
   static Future<Map<String, dynamic>> setFavoriteProduct({
     required userId,
     required productId,
@@ -16,7 +18,7 @@ class FavoriteApi {
         'deleting': deleting,
       };
       final response =
-          await NetworkClient.dio.post("/toggle/favorite", data: params);
+          await _networkClient.dio.post("/toggle/favorite", data: params);
       debugPrint("error: ${response.data}");
       result = response.data;
     } catch (err) {
@@ -30,7 +32,7 @@ class FavoriteApi {
       {required userId}) async {
     Map<String, dynamic> result = {};
     try {
-      final response = await NetworkClient.dio.get(
+      final response = await _networkClient.dio.get(
         "/get/favorite",
         queryParameters: {"user_id": userId},
       );
@@ -40,10 +42,4 @@ class FavoriteApi {
     }
     return result;
   }
-
-  // static Future<void> removeFavorite(
-  //     {required userId, required productId}) async {
-  //   await NetworkClient.dio.delete("/delete/favorite",
-  //       queryParameters: {"user_id": userId, "product_id": productId});
-  // }
 }

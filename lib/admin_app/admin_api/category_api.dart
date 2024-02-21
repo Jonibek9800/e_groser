@@ -1,15 +1,17 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:eGrocer/di/di_container.dart';
 import 'package:flutter/material.dart';
 
 import '../../user_app/domain/api_client/network_client.dart';
 
 class CategoryApi {
+ static final _networkClient = locator<NetworkClient>();
   static Future<Map<String, dynamic>> getAllCategories() async {
     Map<String, dynamic> result = {};
     try {
-      final response = await NetworkClient.dio.get("/get/categories");
+      final response = await _networkClient.dio.get("/get/categories");
       if (response.statusCode != 200) {
         return result = {"serverError": response.data};
       }
@@ -31,7 +33,7 @@ class CategoryApi {
           : null;
       final dataMap = FormData.fromMap({"title": name, "poster": posterPath});
       final response =
-          await NetworkClient.dio.post("/add/category", data: dataMap);
+          await _networkClient.dio.post("/add/category", data: dataMap);
       debugPrint("${response.data}");
       if (response.statusCode != 200) {
         return result = {"error bad": response.data['message']};
@@ -56,7 +58,7 @@ class CategoryApi {
           : null;
       final dataMap = FormData.fromMap({"title": name, "poster": posterPath});
       final response =
-          await NetworkClient.dio.post("/update/category/$id", data: dataMap);
+          await _networkClient.dio.post("/update/category/$id", data: dataMap);
       if (response.statusCode != 200) {
         return result = {"error": response.data['message']};
       }
@@ -70,7 +72,7 @@ class CategoryApi {
   static Future<Map<String, dynamic>> deleteCategory({required int? id}) async {
     Map<String, dynamic> result = {};
     try {
-      final response = await NetworkClient.dio.delete("/delete/category/$id");
+      final response = await _networkClient.dio.delete("/delete/category/$id");
       if (response.statusCode != 200) {
         return result = {"error": response.data['message']};
       }

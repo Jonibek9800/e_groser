@@ -4,11 +4,14 @@ import 'package:dio/dio.dart';
 import 'package:eGrocer/user_app/domain/api_client/network_client.dart';
 import 'package:flutter/material.dart';
 
+import '../../di/di_container.dart';
+
 class SliderApi {
+  static final _networkClient = locator<NetworkClient>();
   static Future<Map<String, dynamic>> getSliderPoster() async {
     Map<String, dynamic> result;
     try {
-      final response = await NetworkClient.dio.get("/get/sliders");
+      final response = await _networkClient.dio.get("/get/sliders");
       if (response.statusCode != 200) {
         return result = {"error message": "Slider get exception"};
       }
@@ -33,7 +36,7 @@ class SliderApi {
         "start_date": startDate,
         "expiration_date": expirationDate,
       });
-      final response = await NetworkClient.dio.post("/add/slider/poster", data: dataMap);
+      final response = await _networkClient.dio.post("/add/slider/poster", data: dataMap);
 
       if (response.statusCode != 200) {
         return result = {"error": "Server error can not get response"};
@@ -60,7 +63,7 @@ class SliderApi {
         "start_date": startDate,
         "expiration_date": expirationDate,
       });
-      final response = await NetworkClient.dio.post("/update/slider/poster/$id", data: dataMap);
+      final response = await _networkClient.dio.post("/update/slider/poster/$id", data: dataMap);
       if (response.statusCode != 200) {
         return result = {"error": "Server error can not get response"};
       }
@@ -75,7 +78,7 @@ class SliderApi {
   static Future<Map<String, dynamic>> deleteSliderPoster({required int? id}) async {
     Map<String, dynamic> result = {};
     try {
-      final response = await NetworkClient.dio.delete("/delete/slider/poster/$id");
+      final response = await _networkClient.dio.delete("/delete/slider/poster/$id");
       if (response.statusCode != 200) {
         return result = {"error": "api exception error"};
       }

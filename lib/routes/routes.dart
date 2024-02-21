@@ -1,5 +1,7 @@
 import 'package:eGrocer/admin_app/admin_widget/category_options_widgets/create_category_widget/add_category_widget.dart';
 import 'package:eGrocer/admin_app/admin_widget/category_options_widgets/update_category_widget/update_category_widget.dart';
+import 'package:eGrocer/admin_app/admin_widget/order_options_widget/orders_edit_list_widget/orders_list_widget.dart';
+import 'package:eGrocer/admin_app/admin_widget/order_options_widget/update_order_status/update_order_status.dart';
 import 'package:eGrocer/admin_app/admin_widget/product_options_widgets/create_product_widget/add_product_widget.dart';
 import 'package:eGrocer/admin_app/admin_widget/product_options_widgets/products_edit_list_widget/product_edit_list_widget.dart';
 import 'package:eGrocer/admin_app/admin_widget/product_options_widgets/update_product_widget/update_product_widget.dart';
@@ -31,22 +33,24 @@ import '../user_app/widget/search_widget/search_widget.dart';
 
 abstract class NavigationRouteNames {
   ///Admin Routes
-  static const userEditPage = "$adminMainPage/user_edit";
-  static const addUserPage = "$userEditPage/add_user";
-  static const updateUserPage = "$userEditPage/update_edit/";
+  static const userEditPage = "$adminMainPage/user/edit";
+  static const addUserPage = "$userEditPage/add/user";
+  static const updateUserPage = "$userEditPage/update";
 
-  static const productEditList = "$adminMainPage/products_list";
+  static const productEditList = "$adminMainPage/products";
   static const productUpdatePage = "$productEditList/update";
   static const productAddPage = "$productEditList/add";
 
-  static const posterEditPage = "$adminMainPage/poster_edit";
-  static const posterAddPage = "$posterEditPage/poster_add";
-  static const posterUpdatePage = "$posterEditPage/poster_update";
+  static const posterEditPage = "$adminMainPage/poster/edit";
+  static const posterAddPage = "$posterEditPage/poster/add";
+  static const posterUpdatePage = "$posterEditPage/poster/update";
 
-  static const categoryEditPage = "$adminMainPage/category_list";
+  static const categoryEditPage = "$adminMainPage/category/list";
   static const addCategoryPage = "$categoryEditPage/add";
   static const updateCategoryPage = "$categoryEditPage/update";
 
+  static const ordersPage = "$adminMainPage/order";
+  static const pageUpdateOrder = "$ordersPage/update";
 
   static const adminMainPage = "/admin_main_page";
 
@@ -85,6 +89,8 @@ class Routes {
       NavigationRouteNames.posterEditPage: (_) => const PosterEditListWidget(),
       NavigationRouteNames.posterAddPage: (_) => const AddPosterWidget(),
       NavigationRouteNames.posterUpdatePage: (_) => const UpdatePosterWidget(),
+      NavigationRouteNames.ordersPage: (_) => const OrdersListWidget(),
+      NavigationRouteNames.pageUpdateOrder: (_) => const UpdateOrderWidget(),
 
       /// User Routes
       NavigationRouteNames.loaderWidget: (_) => const LoaderWidget(),

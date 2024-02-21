@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 
+import '../../../di/di_container.dart';
 import '../../../entity/product_cart.dart';
 import 'network_client.dart';
 
 abstract class OrderNetwork {
+  static final _networkClient = locator<NetworkClient>();
   static Future<Map<String, dynamic>> createCheckDetails(
       {required List<ProductsInCart> listOfCart, required userId}) async {
     Map<String, dynamic> data = {
@@ -16,7 +18,7 @@ abstract class OrderNetwork {
     Map<String, dynamic> result = {};
     try {
       final response =
-          await NetworkClient.dio.post("/create/check_details", data: data);
+          await _networkClient.dio.post("/create/check_details", data: data);
       debugPrint("response: $response");
       if (response.statusCode != 200) {
         debugPrint(
@@ -35,7 +37,7 @@ abstract class OrderNetwork {
   static Future<List<dynamic>> getChecks({required userId}) async {
     List<dynamic> result = [];
     try {
-      final response = await NetworkClient.dio
+      final response = await _networkClient.dio
           .get("/get/checks", queryParameters: {"user_id": userId});
 
       if (response.statusCode != 200) {

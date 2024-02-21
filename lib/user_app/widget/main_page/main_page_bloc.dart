@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../entity/user.dart';
-import '../../../admin_app/admin_widget/page_editing_widget/create_page_widget.dart';
+import '../../../admin_app/admin_widget/admin_main_widget/create_page_widget.dart';
 import '../categories_page/categories_widget.dart';
 import '../home_page/home_page_widget.dart';
 import '../profile_page/profile_page_widget.dart';

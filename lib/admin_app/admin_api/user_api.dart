@@ -3,13 +3,15 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../di/di_container.dart';
 import '../../user_app/domain/api_client/network_client.dart';
 
 class UserApi {
+  static final _networkClient = locator<NetworkClient>();
   static Future<Map<String, dynamic>?> getAllUser() async {
     Map<String, dynamic>? result;
     try {
-      final response = await NetworkClient.dio.get("/get/users");
+      final response = await _networkClient.dio.get("/get/users");
       if (response.statusCode != 200) {
         return result = {"error": "Server error from get all users will check getAllUser Method"};
       }
@@ -23,7 +25,7 @@ class UserApi {
   static Future<Map<String, dynamic>> getRoleOfUser() async {
     Map<String, dynamic> result;
     try {
-      final response = await NetworkClient.dio.get("/get/user/role");
+      final response = await _networkClient.dio.get("/get/user/role");
       if (response.statusCode != 200) {
         return result = {"message": "Error from get role"};
       }
@@ -54,7 +56,7 @@ class UserApi {
         "name": name,
         "role_id": roleId,
       });
-      final response = await NetworkClient.dio.post(
+      final response = await _networkClient.dio.post(
         "/create/user",
         data: dataMap,
       );
@@ -87,7 +89,7 @@ class UserApi {
         "password": password,
         "role_id": roleId,
       });
-      final response = await NetworkClient.dio.post("/update/$userId", data: params,
+      final response = await _networkClient.dio.post("/update/$userId", data: params,
           onSendProgress: (int sent, int total) {
         debugPrint("$sent $total");
       });
@@ -103,7 +105,7 @@ class UserApi {
   }
 
   static Future<void> removeUser({required int? id}) async {
-    final response = await NetworkClient.dio.delete("/delete/user/$id");
+    final response = await _networkClient.dio.delete("/delete/user/$id");
     debugPrint("${response.data}");
     if (response.statusCode != 200) {
       debugPrint("dropped user exception");
